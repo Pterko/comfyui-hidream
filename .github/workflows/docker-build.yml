@@ -76,5 +76,5 @@ jobs:
       - name: Image digest
         # Outputs the digest of the pushed image, useful for verification
         if: ${{ success() && github.event_name != 'pull_request' && steps.docker_build.outputs.digest }}
-        run: echo "Pushed image digest: ${{ steps.docker_build.outputs.digest }}"
+        run: 'echo "Pushed image digest: ${{ steps.docker_build.outputs.digest }}"'
 
