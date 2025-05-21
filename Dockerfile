@@ -6,24 +6,35 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Set working directory for ComfyUI
 WORKDIR /opt/ComfyUI
 
-# Install dependencies: git, python, pip, wget, netcat (for health check) and other utilities
+# Install dependencies: git, python, pip, wget, netcat (for health check), build tools, and other utilities
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
     python3 \
     python3-pip \
+    python3-dev \
+    build-essential \
     wget \
     netcat-openbsd \
     libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip, setuptools, and wheel
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel
+
 # Clone ComfyUI repository
+# Assuming ComfyUI is the primary application and requirements.txt is from it.
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git .
 
-# Install ComfyUI Python dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt \
-    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
+# Install ComfyUI Python dependencies from requirements.txt first
+# Ensure requirements.txt exists in the cloned ComfyUI directory
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Install PyTorch, torchvision, torchaudio, and xformers
+# Using the specified CUDA version (cu121)
+RUN pip3 install --no-cache-dir \
+    torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128 \
     xformers
 
 # Install ComfyUI Manager
