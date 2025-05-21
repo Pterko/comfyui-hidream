@@ -62,6 +62,7 @@ jobs:
 
 
       - name: Build and push Docker image to GHCR
+        id: docker_build # Added id here
         uses: docker/build-push-action@v5
         with:
           context: . # Build context is the root of the repository
@@ -74,6 +75,6 @@ jobs:
 
       - name: Image digest
         # Outputs the digest of the pushed image, useful for verification
-        if: ${{ success() && github.event_name != 'pull_request' }} # Only run if build and push was successful
-        run: echo "Pushed image digest: ${{ steps.docker_build.outputs.digest }}" # Note: The build step id is implicitly 'docker_build' by build-push-action if not specified
+        if: ${{ success() && github.event_name != 'pull_request' && steps.docker_build.outputs.digest }}
+        run: echo "Pushed image digest: ${{ steps.docker_build.outputs.digest }}"
 
