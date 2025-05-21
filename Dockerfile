@@ -34,14 +34,23 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Install PyTorch, torchvision, torchaudio, and xformers
 # Using the specified CUDA version (cu121)
 RUN pip3 install --no-cache-dir \
-    torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu128 \
+    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
     xformers
 
-# Install ComfyUI Manager
+# Install ComfyUI Manager and other custom nodes
 RUN cd custom_nodes && \
+    echo "Cloning ComfyUI-Manager..." && \
     git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
     cd ComfyUI-Manager && \
-    pip3 install --no-cache-dir -r requirements.txt
+    pip3 install --no-cache-dir -r requirements.txt && \
+    cd .. && \
+    echo "Cloning ComfyUI-GGUF..." && \
+    git clone https://github.com/city96/ComfyUI-GGUF.git && \
+    echo "Cloning ComfyUI-MultiGPU..." && \
+    git clone https://github.com/pollockjj/ComfyUI-MultiGPU.git
+    # If ComfyUI-GGUF or ComfyUI-MultiGPU had their own requirements.txt, you would add:
+    # cd ComfyUI-GGUF && pip3 install --no-cache-dir -r requirements.txt && cd ..
+    # cd ComfyUI-MultiGPU && pip3 install --no-cache-dir -r requirements.txt && cd ..
 
 # Create directories for models (downloads will happen at runtime)
 RUN mkdir -p /opt/ComfyUI/models/text_encoders \
